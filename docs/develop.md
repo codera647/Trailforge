@@ -30,5 +30,6 @@ original data through a candidate file, pauses after BUILD, reconstructs the hos
 controller, verifies and exports handoff. It runs trusted Python callbacks and
 executes no candidate code. For untrusted check programs, compose VERIFY with
 `DockerSandbox` and a trusted semantic verifier. Docker exit zero or a printed
-PASS is insufficient criterion evidence. Linux isolation conformance remains
-pending until the actual selected engine runs the boundary tests.
+PASS is insufficient criterion evidence. Five actual Linux boundary cases have
+passed on the selected engine and native Linux installed-wheel CI. Each release
+requires fresh candidate-bound results; see [release status](release-status.md).
