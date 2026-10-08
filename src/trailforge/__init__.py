@@ -1,3 +1,3 @@
 """Provider-independent Trailforge local prototype."""
 
-__version__ = "0.1.0a1"
+__version__ = "BROKEN_PROTECTION_PROBE"
