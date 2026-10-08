@@ -1,0 +1,174 @@
+{
+  "name": "Trailforge conformance",
+  "on": {
+    "pull_request": null,
+    "push": null,
+    "workflow_dispatch": null
+  },
+  "permissions": {
+    "contents": "read"
+  },
+  "concurrency": {
+    "group": "trailforge-${{ github.workflow }}-${{ github.ref }}",
+    "cancel-in-progress": true
+  },
+  "jobs": {
+    "portable": {
+      "strategy": {
+        "fail-fast": false,
+        "matrix": {
+          "os": [
+            "ubuntu-24.04",
+            "windows-2022"
+          ],
+          "python": [
+            "3.11",
+            "3.13.15"
+          ]
+        }
+      },
+      "runs-on": "${{ matrix.os }}",
+      "timeout-minutes": 15,
+      "steps": [
+        {
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "with": {
+            "persist-credentials": false
+          }
+        },
+        {
+          "uses": "actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c",
+          "with": {
+            "python-version": "${{ matrix.python }}"
+          }
+        },
+        {
+          "run": "python -m pip install -r requirements-dev.lock"
+        },
+        {
+          "run": "python scripts/verify_workflows.py"
+        },
+        {
+          "run": "python scripts/verify_local.py"
+        },
+        {
+          "if": "matrix.os == 'ubuntu-24.04' && matrix.python == '3.13.15'",
+          "run": "python scripts/verify_optional.py"
+        },
+        {
+          "if": "always()",
+          "uses": "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+          "with": {
+            "name": "portable-${{ matrix.os }}-${{ matrix.python }}",
+            "path": ".local/verification/report.json\n.local/verification/standalone-suite.json\n.local/verification/trailforge-0.1.0a1-py3-none-any.whl\n.local/verification/trailforge-0.1.0a1.tar.gz\n.local/verification/optional-report.json\n.local/verification/optional-suite.json",
+            "include-hidden-files": true,
+            "if-no-files-found": "warn",
+            "retention-days": 7
+          }
+        }
+      ]
+    },
+    "postgres": {
+      "runs-on": "ubuntu-24.04",
+      "timeout-minutes": 20,
+      "services": {
+        "postgres": {
+          "image": "postgres@sha256:fc973eb97c9fd04bfa1840e0f510719a584ccb3be8debfe6a4144637a9dfe8cf",
+          "env": {
+            "POSTGRES_USER": "trailforge_ci",
+            "POSTGRES_PASSWORD": "ephemeral-ci-only",
+            "POSTGRES_DB": "trailforge_ci"
+          },
+          "ports": [
+            "5432:5432"
+          ],
+          "options": "--health-cmd \"pg_isready -U trailforge_ci -d trailforge_ci\" --health-interval 5s --health-timeout 5s --health-retries 12"
+        }
+      },
+      "steps": [
+        {
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "with": {
+            "persist-credentials": false
+          }
+        },
+        {
+          "uses": "actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c",
+          "with": {
+            "python-version": "3.13.15"
+          }
+        },
+        {
+          "run": "python -m pip install -r requirements-dev.lock"
+        },
+        {
+          "run": "python scripts/verify_workflows.py"
+        },
+        {
+          "run": "python scripts/verify_local.py"
+        },
+        {
+          "run": "python scripts/verify_postgres.py",
+          "env": {
+            "TRAILFORGE_DATABASE_URL": "postgresql://trailforge_ci:ephemeral-ci-only@127.0.0.1:5432/trailforge_ci"
+          }
+        },
+        {
+          "if": "always()",
+          "uses": "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+          "with": {
+            "name": "postgres-installed",
+            "path": ".local/verification/report.json\n.local/verification/standalone-suite.json\n.local/verification/trailforge-0.1.0a1-py3-none-any.whl\n.local/verification/trailforge-0.1.0a1.tar.gz\n.local/verification/postgres-report.json\n.local/verification/postgres-suite.json",
+            "include-hidden-files": true,
+            "if-no-files-found": "warn",
+            "retention-days": 7
+          }
+        }
+      ]
+    },
+    "sandbox": {
+      "runs-on": "ubuntu-24.04",
+      "timeout-minutes": 15,
+      "steps": [
+        {
+          "uses": "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+          "with": {
+            "persist-credentials": false
+          }
+        },
+        {
+          "uses": "actions/setup-python@e797f83bcb11b83ae66e0230d6156d7c80228e7c",
+          "with": {
+            "python-version": "3.13.15"
+          }
+        },
+        {
+          "run": "python -m pip install -r requirements-dev.lock"
+        },
+        {
+          "run": "python scripts/verify_workflows.py"
+        },
+        {
+          "run": "python scripts/verify_local.py"
+        },
+        {
+          "run": "docker pull docker.io/library/python@sha256:f040863673aea2570c3ff6a5c3fb4c673a016cbc5375005ad145915922b6b78a"
+        },
+        {
+          "run": "python scripts/verify_linux.py --image docker.io/library/python@sha256:f040863673aea2570c3ff6a5c3fb4c673a016cbc5375005ad145915922b6b78a"
+        },
+        {
+          "if": "always()",
+          "uses": "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f",
+          "with": {
+            "name": "linux-installed",
+            "path": ".local/verification/report.json\n.local/verification/standalone-suite.json\n.local/verification/trailforge-0.1.0a1-py3-none-any.whl\n.local/verification/trailforge-0.1.0a1.tar.gz\n.local/verification/sandbox-report.json",
+            "include-hidden-files": true,
+            "if-no-files-found": "warn",
+            "retention-days": 7
+          }
+        }
+      ]
+    }
+  }
+}

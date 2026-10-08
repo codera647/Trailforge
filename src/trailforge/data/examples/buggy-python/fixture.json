@@ -1,0 +1,38 @@
+{
+  "schema_version": "offline/0.1",
+  "tenant_id": "trailforge-example",
+  "resource_id": "buggy-python",
+  "base_revision": "fixture-base-v1",
+  "head_revision": "PY001-head-v1",
+  "files": [
+    {
+      "path": "stats.py",
+      "truncated": false
+    }
+  ],
+  "mock_output": {
+    "findings": [
+      {
+        "title": "Empty input divides by zero",
+        "category": "behavior",
+        "severity": "MEDIUM",
+        "scenario": "mean([]) under the declared empty-input contract",
+        "impact": "ZeroDivisionError instead of zero",
+        "recommendation": "Return zero before dividing when values is empty.",
+        "role": "correctness",
+        "evidence": {
+          "path": "stats.py",
+          "start_line": 3,
+          "end_line": 3,
+          "quote": "    return sum(values) / len(values)\n"
+        }
+      }
+    ],
+    "roles": {
+      "security": "COMPLETE",
+      "correctness": "COMPLETE",
+      "tests": "COMPLETE",
+      "documentation": "COMPLETE"
+    }
+  }
+}

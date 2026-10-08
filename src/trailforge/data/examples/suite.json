@@ -1,0 +1,66 @@
+{
+  "schema_version": "trailforge/smoke-suite/0.1",
+  "origin": "ORIGINAL_SYNTHETIC_MOCK",
+  "cases": [
+    {
+      "id": "buggy-python",
+      "fixture": "buggy-python",
+      "expected_outcome": "COMPLETE",
+      "expected_findings": 1
+    },
+    {
+      "id": "clean-python",
+      "fixture": "clean-python",
+      "expected_outcome": "COMPLETE",
+      "expected_findings": 0
+    },
+    {
+      "id": "buggy-javascript",
+      "fixture": "buggy-javascript",
+      "expected_outcome": "COMPLETE",
+      "expected_findings": 1
+    },
+    {
+      "id": "clean-javascript",
+      "fixture": "clean-javascript",
+      "expected_outcome": "COMPLETE",
+      "expected_findings": 0
+    },
+    {
+      "id": "buggy-typescript",
+      "fixture": "buggy-typescript",
+      "expected_outcome": "COMPLETE",
+      "expected_findings": 1
+    },
+    {
+      "id": "clean-typescript",
+      "fixture": "clean-typescript",
+      "expected_outcome": "COMPLETE",
+      "expected_findings": 0
+    },
+    {
+      "id": "injection",
+      "fixture": "injection",
+      "expected_outcome": "COMPLETE",
+      "expected_findings": 0
+    },
+    {
+      "id": "unsupported",
+      "fixture": "unsupported",
+      "expected_outcome": "PARTIAL",
+      "expected_findings": 0
+    },
+    {
+      "id": "truncated",
+      "fixture": "truncated",
+      "expected_outcome": "PARTIAL",
+      "expected_findings": 0
+    },
+    {
+      "id": "role-timeout",
+      "fixture": "role-timeout",
+      "expected_outcome": "PARTIAL",
+      "expected_findings": 0
+    }
+  ]
+}

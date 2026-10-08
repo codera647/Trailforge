@@ -1,0 +1,14 @@
+include README.md LICENSE SECURITY.md CONTRIBUTING.md CHANGELOG.md THIRD_PARTY_NOTICES.md requirements-dev.lock .gitignore
+include requirements-postgres.lock
+include .gitattributes
+recursive-include docs *.md
+recursive-include examples *.py *.json *.md
+recursive-include scripts *.py
+recursive-include tests *.py
+recursive-include tests_optional *.py
+recursive-include tests_postgres *.py
+recursive-include .github *.yml
+recursive-include src/trailforge/data/examples *
+recursive-exclude * __pycache__ *.pyc *.pyo *.pdf *.sqlite3
+prune .local
+prune .venv

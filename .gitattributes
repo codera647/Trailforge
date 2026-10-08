@@ -1,0 +1,2 @@
+# Bundled fixture evidence is byte-exact; preserve its authored LF on every OS.
+src/trailforge/data/examples/** text eol=lf

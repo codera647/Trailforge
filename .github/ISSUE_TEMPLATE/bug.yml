@@ -1,0 +1,18 @@
+name: Bug report
+description: Report a reproducible Trailforge behavior problem
+body:
+  - type: markdown
+    attributes:
+      value: "For vulnerabilities, use the private security reporting link in SECURITY.md. Do not include credentials or customer source."
+  - type: input
+    id: version
+    attributes:
+      label: Trailforge version and platform
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal original reproduction, expected behavior and actual behavior
+    validations:
+      required: true

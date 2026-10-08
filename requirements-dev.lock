@@ -1,0 +1,6 @@
+# Exact local wheel/conformance tools; no provider runtime dependencies.
+setuptools==80.9.0
+build==1.3.0
+packaging==25.0
+pyproject_hooks==1.2.0
+colorama==0.4.6; sys_platform == 'win32'

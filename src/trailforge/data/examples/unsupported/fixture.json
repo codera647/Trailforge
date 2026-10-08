@@ -1,0 +1,22 @@
+{
+  "schema_version": "offline/0.1",
+  "tenant_id": "trailforge-example",
+  "resource_id": "unsupported",
+  "base_revision": "fixture-base-v1",
+  "head_revision": "COV001-head-v1",
+  "files": [
+    {
+      "path": "main.rs",
+      "truncated": false
+    }
+  ],
+  "mock_output": {
+    "findings": [],
+    "roles": {
+      "security": "COMPLETE",
+      "correctness": "COMPLETE",
+      "tests": "COMPLETE",
+      "documentation": "COMPLETE"
+    }
+  }
+}

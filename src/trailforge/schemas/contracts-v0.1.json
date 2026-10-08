@@ -1,0 +1,1593 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:trailforge:contracts:0.1",
+  "$defs": {
+    "ScopeBinding": {
+      "type": "object",
+      "properties": {
+        "tenant_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "resource_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "base_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "head_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "policy_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "profile_version": {
+          "const": "offline/0.1"
+        },
+        "config_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "tenant_id",
+        "resource_id",
+        "base_revision",
+        "head_revision",
+        "input_digest",
+        "policy_digest",
+        "profile_version",
+        "config_digest"
+      ],
+      "additionalProperties": false
+    },
+    "SourceReference": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "start_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "end_line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "quote": {
+          "type": "string",
+          "minLength": 1
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "receipt_id": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "path",
+        "start_line",
+        "end_line",
+        "quote",
+        "revision",
+        "content_digest",
+        "receipt_id"
+      ],
+      "additionalProperties": false
+    },
+    "EvidenceReceipt": {
+      "type": "object",
+      "properties": {
+        "issuer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "content_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt_id": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "issuer",
+        "run_id",
+        "binding_digest",
+        "path",
+        "content_digest",
+        "revision",
+        "receipt_id"
+      ],
+      "additionalProperties": false
+    },
+    "SourceArtifact": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "language": {
+          "enum": [
+            "python",
+            "javascript",
+            "typescript",
+            "unsupported"
+          ]
+        },
+        "content": {
+          "type": "string"
+        },
+        "content_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "trust": {
+          "const": "UNTRUSTED_SOURCE"
+        },
+        "receipt": {
+          "$ref": "#/$defs/EvidenceReceipt"
+        }
+      },
+      "required": [
+        "path",
+        "language",
+        "content",
+        "content_digest",
+        "truncated",
+        "trust",
+        "receipt"
+      ],
+      "additionalProperties": false
+    },
+    "Snapshot": {
+      "type": "object",
+      "properties": {
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SourceArtifact"
+          },
+          "minItems": 1,
+          "maxItems": 32
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "artifacts",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "FindingProposal": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "scenario": {
+          "type": "string",
+          "minLength": 1
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": [
+            "security",
+            "correctness",
+            "tests",
+            "documentation"
+          ]
+        },
+        "evidence": {
+          "$ref": "#/$defs/SourceReference"
+        }
+      },
+      "required": [
+        "title",
+        "category",
+        "severity",
+        "scenario",
+        "impact",
+        "recommendation",
+        "role",
+        "evidence"
+      ],
+      "additionalProperties": false
+    },
+    "Finding": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "severity": {
+          "enum": [
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
+        },
+        "scenario": {
+          "type": "string",
+          "minLength": 1
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": [
+            "security",
+            "correctness",
+            "tests",
+            "documentation"
+          ]
+        },
+        "evidence": {
+          "$ref": "#/$defs/SourceReference"
+        },
+        "finding_id": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "disposition": {
+          "const": "DRAFT_ONLY"
+        },
+        "reliability": {
+          "type": "null"
+        },
+        "critic": {
+          "const": "NOT_IMPLEMENTED"
+        },
+        "needs_human_review": {
+          "const": true
+        }
+      },
+      "required": [
+        "title",
+        "category",
+        "severity",
+        "scenario",
+        "impact",
+        "recommendation",
+        "role",
+        "evidence",
+        "finding_id",
+        "run_id",
+        "binding_digest",
+        "disposition",
+        "reliability",
+        "critic",
+        "needs_human_review"
+      ],
+      "additionalProperties": false
+    },
+    "MockOutput": {
+      "type": "object",
+      "properties": {
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          },
+          "maxItems": 64
+        },
+        "roles": {
+          "type": "object",
+          "properties": {
+            "security": {
+              "enum": [
+                "COMPLETE",
+                "TIMEOUT",
+                "FAILED",
+                "SKIPPED"
+              ]
+            },
+            "correctness": {
+              "enum": [
+                "COMPLETE",
+                "TIMEOUT",
+                "FAILED",
+                "SKIPPED"
+              ]
+            },
+            "tests": {
+              "enum": [
+                "COMPLETE",
+                "TIMEOUT",
+                "FAILED",
+                "SKIPPED"
+              ]
+            },
+            "documentation": {
+              "enum": [
+                "COMPLETE",
+                "TIMEOUT",
+                "FAILED",
+                "SKIPPED"
+              ]
+            }
+          },
+          "required": [
+            "security",
+            "correctness",
+            "tests",
+            "documentation"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "findings",
+        "roles"
+      ],
+      "additionalProperties": false
+    },
+    "ReviewReceipt": {
+      "type": "object",
+      "properties": {
+        "adapter_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "output": {
+          "$ref": "#/$defs/MockOutput"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "adapter_id",
+        "output",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "Coverage": {
+      "type": "object",
+      "properties": {
+        "required_roles": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "security",
+              "correctness",
+              "tests",
+              "documentation"
+            ]
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "role": {
+                "enum": [
+                  "security",
+                  "correctness",
+                  "tests",
+                  "documentation"
+                ]
+              },
+              "status": {
+                "enum": [
+                  "COMPLETE",
+                  "TIMEOUT",
+                  "FAILED",
+                  "SKIPPED"
+                ]
+              },
+              "method": {
+                "const": "MOCK"
+              }
+            },
+            "required": [
+              "role",
+              "status",
+              "method"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "inspected_files": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "enum": [
+                  "role",
+                  "file",
+                  "validation"
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              },
+              "role": {
+                "enum": [
+                  "security",
+                  "correctness",
+                  "tests",
+                  "documentation"
+                ]
+              },
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9223372036854775807
+              }
+            },
+            "required": [
+              "kind",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "semantic_verification": {
+          "const": "NOT_IMPLEMENTED"
+        }
+      },
+      "required": [
+        "required_roles",
+        "roles",
+        "inspected_files",
+        "gaps",
+        "semantic_verification"
+      ],
+      "additionalProperties": false
+    },
+    "Validation": {
+      "type": "object",
+      "properties": {
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Finding"
+          },
+          "maxItems": 64
+        },
+        "rejected": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "proposal_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9223372036854775807
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "proposal_index",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "coverage": {
+          "$ref": "#/$defs/Coverage"
+        }
+      },
+      "required": [
+        "findings",
+        "rejected",
+        "coverage"
+      ],
+      "additionalProperties": false
+    },
+    "Draft": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "offline/0.1"
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding": {
+          "$ref": "#/$defs/ScopeBinding"
+        },
+        "mode": {
+          "const": "DRAFT"
+        },
+        "reviewer": {
+          "const": "MOCK"
+        },
+        "workflow_outcome": {
+          "enum": [
+            "COMPLETE",
+            "PARTIAL"
+          ]
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Finding"
+          },
+          "maxItems": 64
+        },
+        "rejected": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "proposal_index": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9223372036854775807
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "proposal_index",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "coverage": {
+          "$ref": "#/$defs/Coverage"
+        },
+        "model_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "notice": {
+          "type": "string",
+          "minLength": 1
+        },
+        "draft_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "run_id",
+        "binding",
+        "mode",
+        "reviewer",
+        "workflow_outcome",
+        "findings",
+        "rejected",
+        "coverage",
+        "model_calls",
+        "notice",
+        "draft_digest"
+      ],
+      "additionalProperties": false
+    },
+    "RunCheckpoint": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "offline/0.1"
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding": {
+          "$ref": "#/$defs/ScopeBinding"
+        },
+        "state_version": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "state": {
+          "enum": [
+            "READY",
+            "RUNNING",
+            "CHECKING",
+            "TERMINAL"
+          ]
+        },
+        "stage": {
+          "enum": [
+            "ADMITTED",
+            "SNAPSHOT",
+            "REVIEWED",
+            "VALIDATED",
+            "DRAFTED"
+          ]
+        },
+        "outcome": {
+          "enum": [
+            null,
+            "COMPLETE",
+            "PARTIAL"
+          ]
+        },
+        "model_calls": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "snapshot": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Snapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "review": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReviewReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "validation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Validation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "draft": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Draft"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "schema_version",
+        "run_id",
+        "binding",
+        "state_version",
+        "state",
+        "stage",
+        "outcome",
+        "model_calls",
+        "snapshot",
+        "review",
+        "validation",
+        "draft"
+      ],
+      "additionalProperties": false
+    },
+    "Task": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "task_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": [
+            "security",
+            "correctness",
+            "tests",
+            "documentation"
+          ]
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "uniqueItems": true
+        },
+        "status": {
+          "enum": [
+            "PENDING",
+            "READY",
+            "RUNNING",
+            "DONE",
+            "FAILED",
+            "TIMEOUT",
+            "SKIPPED"
+          ]
+        },
+        "binding_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "task_id",
+        "run_id",
+        "role",
+        "attempt",
+        "dependencies",
+        "status",
+        "binding_digest"
+      ],
+      "additionalProperties": false
+    },
+    "LeaseToken": {
+      "type": "object",
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "worker_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "epoch": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9223372036854775807
+        }
+      },
+      "required": [
+        "run_id",
+        "worker_id",
+        "epoch"
+      ],
+      "additionalProperties": false
+    },
+    "Approval": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "approval_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "payload_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "policy_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "action": {
+          "enum": [
+            "COMMENT",
+            "DEV_EXECUTE"
+          ]
+        },
+        "decision": {
+          "enum": [
+            "APPROVE",
+            "REJECT"
+          ]
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "schema_version",
+        "approval_id",
+        "actor_id",
+        "run_id",
+        "binding_digest",
+        "payload_digest",
+        "policy_digest",
+        "action",
+        "decision",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "ResourcePolicy": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "policy_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "unit": {
+          "const": "MOCK_CALL"
+        },
+        "run_limit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "tenant_limit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "global_limit": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "pricing_ref": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "schema_version",
+        "policy_id",
+        "unit",
+        "run_limit",
+        "tenant_limit",
+        "global_limit",
+        "pricing_ref"
+      ],
+      "additionalProperties": false
+    },
+    "ResourceReservation": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "reservation_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operation_key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "units": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9223372036854775807
+        },
+        "unit": {
+          "const": "MOCK_CALL"
+        },
+        "lease_epoch": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9223372036854775807
+        },
+        "state": {
+          "enum": [
+            "CHARGED",
+            "SETTLED"
+          ]
+        },
+        "scope_keys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "required": [
+        "schema_version",
+        "reservation_id",
+        "run_id",
+        "operation_key",
+        "binding_digest",
+        "units",
+        "unit",
+        "lease_epoch",
+        "state",
+        "scope_keys"
+      ],
+      "additionalProperties": false
+    },
+    "GoalContract": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "goal_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 1
+        },
+        "allowed_scope": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "invariant_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "deliverables": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required_criterion_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "policy_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "goal_id",
+        "objective",
+        "allowed_scope",
+        "invariant_ids",
+        "deliverables",
+        "required_criterion_ids",
+        "policy_digest",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "AdapterDescriptor": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "adapter_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "SNAPSHOT",
+              "MOCK_REVIEW",
+              "STATE",
+              "DRAFT"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "effect_class": {
+          "const": "NO_EXTERNAL_EFFECT"
+        },
+        "input_schema_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "output_schema_ref": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cancellation_semantics": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "adapter_id",
+        "version",
+        "capabilities",
+        "effect_class",
+        "input_schema_ref",
+        "output_schema_ref",
+        "cancellation_semantics"
+      ],
+      "additionalProperties": false
+    },
+    "AdapterError": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "error_code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "enum": [
+            "CONTRACT",
+            "SCOPE",
+            "CONFLICT",
+            "LEASE",
+            "BUDGET",
+            "TRANSIENT",
+            "INTEGRITY"
+          ]
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "effect_certainty": {
+          "enum": [
+            "NONE",
+            "UNKNOWN",
+            "CONFIRMED"
+          ]
+        },
+        "redacted_message": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "error_code",
+        "category",
+        "retryable",
+        "effect_certainty",
+        "redacted_message"
+      ],
+      "additionalProperties": false
+    },
+    "DispatchMessage": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "kind": {
+          "const": "RUN_WAKEUP"
+        },
+        "message_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "event_sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9223372036854775807
+        },
+        "event_kind": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "message_id",
+        "run_id",
+        "binding_digest",
+        "event_sequence",
+        "event_kind"
+      ],
+      "additionalProperties": false
+    },
+    "ActionProposal": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "trailforge/0.1"
+            },
+            "run_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "binding_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "policy_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "expected_version": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            },
+            "action": {
+              "const": "READ_SOURCE"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "path"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "schema_version",
+            "run_id",
+            "binding_digest",
+            "policy_digest",
+            "expected_version",
+            "action",
+            "arguments"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "trailforge/0.1"
+            },
+            "run_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "binding_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "policy_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "expected_version": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            },
+            "action": {
+              "const": "MOCK_REVIEW"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "schema_version",
+            "run_id",
+            "binding_digest",
+            "policy_digest",
+            "expected_version",
+            "action",
+            "arguments"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "trailforge/0.1"
+            },
+            "run_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "binding_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "policy_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "expected_version": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            },
+            "action": {
+              "const": "REQUEST_SIMULATION"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "draft_digest": {
+                  "type": "string",
+                  "pattern": "^sha256:[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "draft_digest"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "schema_version",
+            "run_id",
+            "binding_digest",
+            "policy_digest",
+            "expected_version",
+            "action",
+            "arguments"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": "trailforge/0.1"
+            },
+            "run_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "binding_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "policy_digest": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "expected_version": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9223372036854775807
+            },
+            "action": {
+              "const": "SIMULATE_COMMENT"
+            },
+            "arguments": {
+              "type": "object",
+              "properties": {
+                "request_id": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "request_id"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "schema_version",
+            "run_id",
+            "binding_digest",
+            "policy_digest",
+            "expected_version",
+            "action",
+            "arguments"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "CommentPreview": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "kind": {
+          "const": "LOCAL_COMMENT_SIMULATION"
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "head_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "draft_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        },
+        "external_effect": {
+          "const": "NONE"
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "run_id",
+        "binding_digest",
+        "head_revision",
+        "draft_digest",
+        "body",
+        "external_effect"
+      ],
+      "additionalProperties": false
+    },
+    "SimulationApproval": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "approval_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actor_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "binding_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "payload_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "policy_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "action": {
+          "const": "SIMULATE_COMMENT"
+        },
+        "decision": {
+          "enum": [
+            "APPROVE",
+            "REJECT"
+          ]
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "schema_version",
+        "approval_id",
+        "actor_id",
+        "run_id",
+        "binding_digest",
+        "payload_digest",
+        "policy_digest",
+        "action",
+        "decision",
+        "expires_at"
+      ],
+      "additionalProperties": false
+    },
+    "SimulationReceipt": {
+      "type": "object",
+      "properties": {
+        "schema_version": {
+          "const": "trailforge/0.1"
+        },
+        "kind": {
+          "const": "LOCAL_COMMENT_SIMULATION"
+        },
+        "receipt_id": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "request_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "payload_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "policy_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "approval_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "external_effect": {
+          "const": "NONE"
+        }
+      },
+      "required": [
+        "schema_version",
+        "kind",
+        "receipt_id",
+        "request_id",
+        "run_id",
+        "payload_digest",
+        "policy_digest",
+        "approval_id",
+        "external_effect"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "description": "Foundation record catalog. Schema validity grants no permission; semantic/issuer/store gates are required."
+}

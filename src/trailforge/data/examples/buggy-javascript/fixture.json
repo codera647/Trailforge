@@ -1,0 +1,38 @@
+{
+  "schema_version": "offline/0.1",
+  "tenant_id": "trailforge-example",
+  "resource_id": "buggy-javascript",
+  "base_revision": "fixture-base-v1",
+  "head_revision": "JS001-head-v1",
+  "files": [
+    {
+      "path": "quantity.js",
+      "truncated": false
+    }
+  ],
+  "mock_output": {
+    "findings": [
+      {
+        "title": "Valid zero quantity becomes one",
+        "category": "behavior",
+        "severity": "MEDIUM",
+        "scenario": "An order contains quantity: 0",
+        "impact": "The returned quantity changes to one",
+        "recommendation": "Use nullish coalescing to preserve zero.",
+        "role": "correctness",
+        "evidence": {
+          "path": "quantity.js",
+          "start_line": 3,
+          "end_line": 3,
+          "quote": "  return order.quantity || 1;\n"
+        }
+      }
+    ],
+    "roles": {
+      "security": "COMPLETE",
+      "correctness": "COMPLETE",
+      "tests": "COMPLETE",
+      "documentation": "COMPLETE"
+    }
+  }
+}

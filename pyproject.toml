@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools==80.9.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trailforge"
+version = "0.1.0a1"
+authors = [{name = "codera647"}]
+description = "Provider-independent, bounded agent execution and recovery"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/codera647/Trailforge"
+Documentation = "https://github.com/codera647/Trailforge/tree/main/docs"
+Issues = "https://github.com/codera647/Trailforge/issues"
+Security = "https://github.com/codera647/Trailforge/security/policy"
+
+[project.scripts]
+trailforge = "trailforge.cli:main"
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]==3.3.6", "jsonschema==4.26.0"]
+schemas = ["jsonschema==4.26.0"]
+langgraph = ["langgraph==1.2.14"]
+
+[tool.setuptools.package-data]
+trailforge = ["schemas/*.json", "migrations/*.sql", "data/examples/**/*"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
