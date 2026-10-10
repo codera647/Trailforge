@@ -306,7 +306,7 @@ A queue wakeup, graph state or model reply is an observation, not a second autho
 ## Develop profile
 
 ```mermaid
-flowchart LR
+flowchart TB
     Plan[PLAN] --> Research[RESEARCH]
     Research --> Build[BUILD]
     Build --> Debug[DEBUG]
@@ -351,9 +351,9 @@ sequenceDiagram
     participant A as Publication authority
     participant P as Publisher adapter
     H->>A: Approve exact scope, revision, policy and payload
-    A->>A: Live guard; persist expiring approval
+    A->>A: Live guard and persist expiring approval
     H->>A: Publish using bound approval
-    A->>A: Consume approval; persist SENDING operation
+    A->>A: Consume approval and persist SENDING operation
     A->>P: Execute stable operation identity
     alt Valid bound acknowledgment
         P-->>A: ACCEPTED receipt
